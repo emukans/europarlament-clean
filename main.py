@@ -6,7 +6,8 @@ import re
 
 data_source = [
     ('http://data.statmt.org/wmt17/translation-task/training-parallel-ep-v8.tgz', 'training-parallel-ep-v8.tgz'),
-    ('http://data.statmt.org/wmt17/translation-task/rapid2016.tgz', 'rapid2016.tgz')
+    ('http://data.statmt.org/wmt17/translation-task/rapid2016.tgz', 'rapid2016.tgz'),
+    ('http://data.statmt.org/wmt17/translation-task/books.lv-en.v1.tgz', 'books.lv-en.v1.tar')
 ]
 
 
@@ -22,7 +23,8 @@ def clean(en_source, lv_source):
         with open(lv_source, 'r') as lv_data:
             for en_raw, lv_raw in zip(en_data, lv_data):
                 if not en_raw.strip() or any(lookup in en_raw.lower() for lookup in ['email:', 'e-mail:', 'fax:', 'phone:', 'mob.:', 'tel.:', 'website:',
-                                                                                     'article t', 'ibid', 'press release']):
+                                                                                     'article t', 'ibid', 'press release', 'book i', 'book v', 'chapter i',
+                                                                                     'chapter v', 'chapter x']):
                     continue
 
                 en_cleaned = general_clean(en_raw)
@@ -36,7 +38,8 @@ def clean(en_source, lv_source):
 
 data_to_clean = [
     ('rapid2016.en-lv.en', 'rapid2016.en-lv.lv'),
-    ('training/europarl-v8.lv-en.en', 'training/europarl-v8.lv-en.lv')
+    ('training/europarl-v8.lv-en.en', 'training/europarl-v8.lv-en.lv'),
+    ('farewell/farewell.en', 'farewell/farewell.lv')
 ]
 
 
@@ -91,3 +94,4 @@ if __name__ == '__main__':
     maybe_clean_data()
     validate('rapid2016.en-lv.en', 'rapid2016.en-lv.lv')
     validate('europarl-v8.lv-en.en', 'europarl-v8.lv-en.lv')
+    validate('farewell.en', 'farewell.lv')
