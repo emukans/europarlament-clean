@@ -7,13 +7,16 @@ import re
 data_source = [
     ('http://data.statmt.org/wmt17/translation-task/training-parallel-ep-v8.tgz', 'training-parallel-ep-v8.tgz'),
     ('http://data.statmt.org/wmt17/translation-task/rapid2016.tgz', 'rapid2016.tgz'),
-    ('http://data.statmt.org/wmt17/translation-task/books.lv-en.v1.tgz', 'books.lv-en.v1.tar')
+    ('http://data.statmt.org/wmt17/translation-task/books.lv-en.v1.tgz', 'books.lv-en.v1.tgz'),
+    ('http://data.statmt.org/wmt17/translation-task/dcep.lv-en.v1.tgz', 'dcep.lv-en.v1.tgz')
 ]
 
 
 def general_clean(raw):
-    cleaned = re.sub(r'([0-9]+.|,)|\(|\)|-|”|"|\'|:|«|»|\+|/|\\|;|(a.m.|p.m.)', '', raw)
+    cleaned = re.sub(r'\(|\)|-|”|"|\'|:|«|»|\+|/|\\|;', '', raw)
     cleaned = re.sub(r'\s+', ' ', cleaned)
+    cleaned = re.sub(r'^[0-9]+.(\s+)?$', '', cleaned)
+    cleaned = re.sub(r'^,|.(\s+)?$', '', cleaned)
 
     return cleaned.strip()
 
@@ -24,13 +27,16 @@ def clean(en_source, lv_source):
             for en_raw, lv_raw in zip(en_data, lv_data):
                 if not en_raw.strip() or any(lookup in en_raw.lower() for lookup in ['email:', 'e-mail:', 'fax:', 'phone:', 'mob.:', 'tel.:', 'website:',
                                                                                      'article t', 'ibid', 'press release', 'book i', 'book v', 'chapter i',
-                                                                                     'chapter v', 'chapter x']):
+                                                                                     'chapter v', 'chapter x', 'oral question']):
+                    continue
+
+                if en_raw.strip().lower() in ['by', 'to the commission', 'to the council']:
                     continue
 
                 en_cleaned = general_clean(en_raw)
                 lv_cleaned = general_clean(lv_raw)
 
-                if not en_cleaned:
+                if not en_cleaned or en_cleaned == lv_cleaned:
                     continue
 
                 yield en_cleaned, lv_cleaned
@@ -39,7 +45,8 @@ def clean(en_source, lv_source):
 data_to_clean = [
     ('rapid2016.en-lv.en', 'rapid2016.en-lv.lv'),
     ('training/europarl-v8.lv-en.en', 'training/europarl-v8.lv-en.lv'),
-    ('farewell/farewell.en', 'farewell/farewell.lv')
+    ('farewell/farewell.en', 'farewell/farewell.lv'),
+    ('dcep.en-lv/dcep.en', 'dcep.en-lv/dcep.lv')
 ]
 
 
@@ -95,3 +102,4 @@ if __name__ == '__main__':
     validate('rapid2016.en-lv.en', 'rapid2016.en-lv.lv')
     validate('europarl-v8.lv-en.en', 'europarl-v8.lv-en.lv')
     validate('farewell.en', 'farewell.lv')
+    validate('dcep.en', 'dcep.lv')
