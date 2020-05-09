@@ -16,7 +16,7 @@ def general_clean(raw):
     cleaned = re.sub(r'\(|\)|-|”|"|\'|:|«|»|\+|/|\\|;', '', raw)
     cleaned = re.sub(r'\s+', ' ', cleaned)
     cleaned = re.sub(r'^[0-9]+.(\s+)?$', '', cleaned)
-    cleaned = re.sub(r'^,|.(\s+)?$', '', cleaned)
+    cleaned = re.sub(r'^(,|.(\s+)?)$', '', cleaned)
 
     return cleaned.strip()
 
@@ -30,7 +30,7 @@ def clean(en_source, lv_source):
                                                                                      'chapter v', 'chapter x', 'oral question']):
                     continue
 
-                if en_raw.strip().lower() in ['by', 'to the commission', 'to the council']:
+                if en_raw.strip().lower() in ['by', 'to the commission', 'to the council', 'and']:
                     continue
 
                 en_cleaned = general_clean(en_raw)
